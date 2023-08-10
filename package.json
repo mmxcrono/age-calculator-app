@@ -1,0 +1,25 @@
+{
+  "name": "age-calculator-app",
+  "version": "1.0.0",
+  "description": "![Design preview for the Age calculator app coding challenge](./design/desktop-preview.jpg)",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "eslint-config-prettier": "^9.0.0",
+    "pinia": "^2.1.6",
+    "vue": "^3.2.36",
+    "vue-router": "^4.2.4"
+  },
+  "devDependencies": {
+    "@typescript-eslint/parser": "^6.3.0",
+    "@vitejs/plugin-vue": "^4.2.3",
+    "prettier": "^3.0.1",
+    "sass": "^1.65.1",
+    "typescript": "^4.9.5",
+    "vite": "^4.4.9",
+    "vitest": "^0.34.1"
+  }
+}

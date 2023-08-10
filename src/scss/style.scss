@@ -1,0 +1,31 @@
+@import './reset';
+@import './variables';
+@import './mixins';
+
+:root {
+  --fs-400: $fs-400;
+  --fs-500: $fs-500;
+  --fs-600: $fs-600;
+  --fs-xl: $fs-xl;
+  --ff: $ff-primary;
+
+  --clr-primary: #{$clr-purple-70};
+  --clr-warn: #{$clr-light-red-70};
+
+  --clr-white: #{$clr-neutral-100};
+  --clr-off-white: #{$clr-neutral-90};
+  --clr-light-grey: #{$clr-neutral-80};
+  --clr-smokey-grey: #{$clr-neutral-20};
+  --clr-off-black: #{$clr-neutral-10};
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  font-size: var(--fs-400);
+  font-family: 'Poppins', sans-serif;
+}
