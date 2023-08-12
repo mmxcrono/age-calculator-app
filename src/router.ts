@@ -1,7 +1,7 @@
 import { createRouter, createWebHashHistory } from 'vue-router';
-import HomePage from './pages/HomePage.vue';
+import AgeCalculator from './pages/AgeCalculator.vue';
 
-const routes = [{ path: '/', component: HomePage }];
+const routes = [{ path: '/', component: AgeCalculator }];
 
 export const router = createRouter({
   history: createWebHashHistory(),
