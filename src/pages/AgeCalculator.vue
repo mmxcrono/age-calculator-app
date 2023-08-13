@@ -2,7 +2,9 @@
 import IconArrow from '@/assets/icon-arrow.svg?raw';
 import NumberInput from '@/components/NumberInput.vue';
 import { ref } from 'vue';
-import { isValidDate } from '@/util/isValidDate';
+import { ErrorMessages } from '@/enums/ErrorMessages';
+import { getDateString } from '@/util/getDateString';
+import { checkValidDate } from '@/util/checkValidDate';
 
 const dayError = ref<string | undefined>();
 const dayValue = ref<number | undefined>();
@@ -17,16 +19,6 @@ const yearValue = ref<number | undefined>();
 const yearsAgo = ref<number | undefined>();
 const animate = ref<boolean>(false);
 
-enum ErrorMessages {
-  InvalidDate = 'Must be a valid date',
-  InvalidDay = 'Must be a valid day',
-  InvalidMonth = 'Must be a valid month',
-  InvalidYear = 'Must be a valid year',
-  FieldRequired = 'This field is required',
-  MustBeInPast = 'Must be in the past',
-}
-
-const PAD = '0';
 const DAY_MS = 86400000;
 const YEAR_MS = DAY_MS * 365.2425;
 const MONTH_MS = YEAR_MS / 12;
@@ -40,7 +32,6 @@ const onDayChange = (value: number) => {
     dayError.value = undefined;
     dayValue.value = value;
   }
-  checkValidDate();
 };
 
 const onMonthChange = (value: number) => {
@@ -52,7 +43,6 @@ const onMonthChange = (value: number) => {
     monthError.value = undefined;
     monthValue.value = value;
   }
-  checkValidDate();
 };
 
 const onYearChange = (value: number) => {
@@ -64,53 +54,34 @@ const onYearChange = (value: number) => {
     yearError.value = undefined;
     yearValue.value = value;
   }
-  checkValidDate();
 };
 
-const checkValidDate = () => {
+const validateDateFields = (): boolean => {
   if (dayValue.value && monthValue.value && yearValue.value) {
-    const dateString = getDateString();
-    const now = new Date();
-    const currentYear = now.getFullYear();
-    const currentMonth = now.getMonth() + 1;
+    const { day, month, year } = checkValidDate(dayValue.value, monthValue.value, yearValue.value);
 
-    const localDate = new Date();
+    dayError.value = day;
+    monthError.value = month;
+    yearError.value = year;
 
-    localDate.setFullYear(yearValue.value);
-    localDate.setMonth(monthValue.value - 1);
-    localDate.setDate(dayValue.value);
-
-    if (!isValidDate(dateString)) {
-      yearError.value = ErrorMessages.InvalidDate;
-    } else if (localDate.getTime() > Date.now()) {
-      if (yearValue.value > currentYear) {
-        yearError.value = ErrorMessages.MustBeInPast;
-      } else if (monthValue.value > currentMonth) {
-        monthError.value = ErrorMessages.MustBeInPast;
-      } else {
-        dayError.value = ErrorMessages.MustBeInPast;
-      }
-    } else if (dayError.value === ErrorMessages.InvalidDate) {
-      dayError.value = undefined;
-    }
+    return !day && !month && !year;
   }
+
+  return false;
 };
 
-const getDateString = () => {
-  if (dayValue.value && monthValue.value && yearValue.value) {
-    const month = monthValue.value.toString().padStart(2, PAD);
-    const year = yearValue.value.toString().padStart(4, PAD);
-    const day = dayValue.value.toString().padStart(2, PAD);
-    const dateString = `${year}-${month}-${day}`;
-
-    return dateString;
-  }
-
-  return '';
+const resetAgo = () => {
+  daysAgo.value = undefined;
+  monthsAgo.value = undefined;
+  yearsAgo.value = undefined;
 };
 
 const onSubmit = (ev: Event) => {
   ev.preventDefault();
+
+  if (!validateDateFields()) {
+    return;
+  }
 
   if (!animate.value) {
     animate.value = true;
@@ -121,27 +92,52 @@ const onSubmit = (ev: Event) => {
     }, 1000);
   }
 
-  const dateString = getDateString();
+  const dateString = getDateString(dayValue.value, monthValue.value, yearValue.value);
 
-  let diff = Date.now() - Date.parse(dateString);
+  // This case should not happen given conditions for disabling the submit button
+  if (!dateString) {
+    resetAgo();
+    return;
+  }
 
+  const now = new Date();
+  const localDate = new Date();
+
+  localDate.setFullYear(yearValue.value!);
+  localDate.setMonth(monthValue.value! - 1);
+  localDate.setDate(dayValue.value!);
+
+  let diff = now.getTime() - localDate.getTime();
+
+  // Check years ago
   if (diff / YEAR_MS > 0) {
     const years = Math.floor(diff / YEAR_MS);
     yearsAgo.value = years;
 
+    // Subtract from running value
     diff -= years * YEAR_MS;
+  } else {
+    yearsAgo.value = 0;
   }
 
+  // Check months ago
   if (diff / MONTH_MS > 0) {
     const months = Math.floor(diff / MONTH_MS);
     monthsAgo.value = months;
 
+    // Subtract from running value
     diff -= months * MONTH_MS;
+  } else {
+    monthsAgo.value = 0;
   }
 
+  // Check days ago
   if (diff / DAY_MS > 0) {
     const days = Math.floor(diff / DAY_MS);
+
     daysAgo.value = days;
+  } else {
+    daysAgo.value = 0;
   }
 };
 </script>

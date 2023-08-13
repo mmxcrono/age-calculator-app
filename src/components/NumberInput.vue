@@ -21,25 +21,25 @@ watch(inputValue, (newValue) => {
 </script>
 
 <template>
-  <div class="day-input">
-    <label for="day" class="day-input__label">{{ label }}</label>
+  <div class="number-input">
+    <label :for="label" class="number-input__label">{{ label }}</label>
     <input
       v-model="inputValue"
       type="number"
-      name="day"
-      :class="{ 'day-input__input': true, 'day-input__input--has-error': !!errorMessage }"
+      :name="label"
+      :class="{ 'number-input__input': true, 'number-input__input--has-error': !!errorMessage }"
       :placeholder="placeholder"
       :min="minValue ?? 1"
       :max="maxValue"
       required
     />
-    <p class="day-input__error">{{ errorMessage }}</p>
+    <p class="number-input__error">{{ errorMessage }}</p>
   </div>
 </template>
 
 <style scoped lang="scss">
 @import '@/scss/mixins';
-.day-input {
+.number-input {
   color: var(--clr-smokey-grey);
 
   display: flex;
