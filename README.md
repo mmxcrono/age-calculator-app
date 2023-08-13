@@ -60,19 +60,18 @@ My steps
 ### Built with
 
 - [Vue](https://vuejs.org/)
+- [Vue Test Utils](https://test-utils.vuejs.org/)
 - [Vite](https://vitejs.dev/)
 - [Vitest](https://vitest.dev/)
+- [Test Coverage](https://vitest.dev/guide/coverage.html)
 - [Prettier](https://prettier.io/)
 - [ESLint](https://eslint.org/)
 - [Flexbox](https://css-tricks.com/snippets/css/a-guide-to-flexbox/)
 
-### Helpful Links
-
-- []
-
 ### What I learned
 
 I find myself adding tests as I go, but what I would do next time is do [Test-Driven Development](https://staragile.com/blog/test-driven-development#:~:text=TDD%20in%20agile%20is%20a,coding%20phases%20of%20software%20development.)
+Creating tests after creating the logic catches things later rather than early on.
 
 Trying to change font by updating variables does not work
 
