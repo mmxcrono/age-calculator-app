@@ -1,10 +1,13 @@
 <script setup lang="ts">
 import IconArrow from '@/assets/icon-arrow.svg?raw';
 import NumberInput from '@/components/NumberInput.vue';
-import { ref } from 'vue';
+import { Ref, ref } from 'vue';
 import { ErrorMessages } from '@/enums/ErrorMessages';
 import { getDateString } from '@/util/getDateString';
 import { checkValidDate } from '@/util/checkValidDate';
+import { DAY_MS, MONTH_MS, YEAR_MS } from '@/constants/dateConstants';
+
+const { FieldRequired, InvalidDay, InvalidMonth, InvalidYear, MustBeInPast } = ErrorMessages;
 
 const dayError = ref<string | undefined>();
 const dayValue = ref<number | undefined>();
@@ -17,43 +20,40 @@ const monthsAgo = ref<number | undefined>();
 const yearError = ref<string | undefined>();
 const yearValue = ref<number | undefined>();
 const yearsAgo = ref<number | undefined>();
+
 const animate = ref<boolean>(false);
 
-const DAY_MS = 86400000;
-const YEAR_MS = DAY_MS * 365.2425;
-const MONTH_MS = YEAR_MS / 12;
+const onInputChange = (
+  value: number,
+  min: number,
+  max: number | undefined,
+  valueRef: Ref<number | undefined>,
+  errorRef: Ref<string | undefined>,
+  invalidMessage: string,
+  aboveMaxMessage?: string,
+) => {
+  if (!value && value !== 0) {
+    errorRef.value = FieldRequired;
+  } else if (isNaN(value) || value < min) {
+    errorRef.value = invalidMessage;
+  } else if (max && value > max) {
+    errorRef.value = aboveMaxMessage ?? invalidMessage;
+  } else {
+    errorRef.value = undefined;
+    valueRef.value = value;
+  }
+};
 
 const onDayChange = (value: number) => {
-  if (!value) {
-    dayError.value = ErrorMessages.FieldRequired;
-  } else if (isNaN(value) || value > 31 || value < 1) {
-    dayError.value = ErrorMessages.InvalidDay;
-  } else {
-    dayError.value = undefined;
-    dayValue.value = value;
-  }
+  onInputChange(value, 1, 31, dayValue, dayError, InvalidDay);
 };
 
 const onMonthChange = (value: number) => {
-  if (!value) {
-    monthError.value = ErrorMessages.FieldRequired;
-  } else if (isNaN(value) || value > 12 || value < 1) {
-    monthError.value = ErrorMessages.InvalidMonth;
-  } else {
-    monthError.value = undefined;
-    monthValue.value = value;
-  }
+  onInputChange(value, 1, 12, monthValue, monthError, InvalidMonth);
 };
 
 const onYearChange = (value: number) => {
-  if (isNaN(value)) {
-    yearError.value = ErrorMessages.InvalidYear;
-  } else if (value > new Date().getFullYear()) {
-    yearError.value = ErrorMessages.MustBeInPast;
-  } else {
-    yearError.value = undefined;
-    yearValue.value = value;
-  }
+  onInputChange(value, 1, new Date().getFullYear(), yearValue, yearError, InvalidYear, MustBeInPast);
 };
 
 const validateDateFields = (): boolean => {
@@ -76,13 +76,7 @@ const resetAgo = () => {
   yearsAgo.value = undefined;
 };
 
-const onSubmit = (ev: Event) => {
-  ev.preventDefault();
-
-  if (!validateDateFields()) {
-    return;
-  }
-
+const animateAgo = () => {
   if (!animate.value) {
     animate.value = true;
 
@@ -91,6 +85,16 @@ const onSubmit = (ev: Event) => {
       clearTimeout(timer);
     }, 1000);
   }
+};
+
+const onSubmit = (ev: Event) => {
+  ev.preventDefault();
+
+  if (!validateDateFields()) {
+    return;
+  }
+
+  animateAgo();
 
   const dateString = getDateString(dayValue.value, monthValue.value, yearValue.value);
 
@@ -109,36 +113,13 @@ const onSubmit = (ev: Event) => {
 
   let diff = now.getTime() - localDate.getTime();
 
-  // Check years ago
-  if (diff / YEAR_MS > 0) {
-    const years = Math.floor(diff / YEAR_MS);
-    yearsAgo.value = years;
+  const years = Math.floor(diff / YEAR_MS);
+  const months = Math.floor((diff % YEAR_MS) / MONTH_MS);
+  const days = Math.floor(((diff % YEAR_MS) % MONTH_MS) / DAY_MS);
 
-    // Subtract from running value
-    diff -= years * YEAR_MS;
-  } else {
-    yearsAgo.value = 0;
-  }
-
-  // Check months ago
-  if (diff / MONTH_MS > 0) {
-    const months = Math.floor(diff / MONTH_MS);
-    monthsAgo.value = months;
-
-    // Subtract from running value
-    diff -= months * MONTH_MS;
-  } else {
-    monthsAgo.value = 0;
-  }
-
-  // Check days ago
-  if (diff / DAY_MS > 0) {
-    const days = Math.floor(diff / DAY_MS);
-
-    daysAgo.value = days;
-  } else {
-    daysAgo.value = 0;
-  }
+  yearsAgo.value = years;
+  monthsAgo.value = months;
+  daysAgo.value = days;
 };
 </script>
 

@@ -36,7 +36,6 @@ describe.concurrent(SUITE, () => {
     const textInput = wrapper.find('input[name="MONTH"]');
 
     await textInput.setValue('13');
-    await button.trigger('click');
 
     expect(wrapper.text()).toContain(ErrorMessages.InvalidMonth);
 
@@ -50,5 +49,33 @@ describe.concurrent(SUITE, () => {
 
     expect(wrapper.text()).not.toContain(ErrorMessages.FieldRequired);
     expect(wrapper.text()).not.toContain(ErrorMessages.InvalidMonth);
+  });
+
+  it(`${SUITE} - Year Input`, async ({ expect }) => {
+    const wrapper = mount(AgeCalculator);
+    const button = wrapper.find('button');
+
+    const textInput = wrapper.find('input[name="YEAR"]');
+
+    await textInput.setValue('0');
+    await button.trigger('click');
+
+    expect(wrapper.text()).toContain(ErrorMessages.InvalidYear);
+
+    await textInput.setValue('');
+    await button.trigger('click');
+
+    expect(wrapper.text()).toContain(ErrorMessages.FieldRequired);
+
+    await textInput.setValue('2999');
+    await button.trigger('click');
+    expect(wrapper.text()).toContain(ErrorMessages.MustBeInPast);
+
+    await textInput.setValue('2023');
+    await button.trigger('click');
+
+    expect(wrapper.text()).not.toContain(ErrorMessages.FieldRequired);
+    expect(wrapper.text()).not.toContain(ErrorMessages.InvalidYear);
+    expect(wrapper.text()).not.toContain(ErrorMessages.MustBeInPast);
   });
 });
