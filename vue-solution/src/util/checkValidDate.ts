@@ -42,6 +42,10 @@ export const checkValidDate = (day?: number, month?: number, year?: number): Dat
       dateValidation.day = undefined;
     }
   }
+  else {
+    dateValidation.year = ErrorMessages.InvalidDate;
+    return dateValidation;
+  }
 
   return dateValidation;
 };

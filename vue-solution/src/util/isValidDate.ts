@@ -24,7 +24,7 @@ export const isValidDate = (date: string): boolean => {
     daysInMonth[1] = 29;
   }
 
-  if (month < 1 || month > 12 || day < 1 || day > daysInMonth[month - 1]) {
+  if (month < 1 || month > 12 || day < 1 || day > daysInMonth[month - 1] || year < 1) {
     return false;
   }
   return true;

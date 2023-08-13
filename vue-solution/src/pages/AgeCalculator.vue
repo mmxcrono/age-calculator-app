@@ -1,7 +1,8 @@
 <script setup lang="ts">
+import { Ref, ref } from 'vue';
+
 import IconArrow from '@/assets/icon-arrow.svg?raw';
 import NumberInput from '@/components/NumberInput.vue';
-import { Ref, ref } from 'vue';
 import { ErrorMessages } from '@/enums/ErrorMessages';
 import { getDateString } from '@/util/getDateString';
 import { checkValidDate } from '@/util/checkValidDate';
