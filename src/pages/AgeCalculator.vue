@@ -17,19 +17,25 @@ const yearValue = ref<number | undefined>();
 const yearsAgo = ref<number | undefined>();
 const animate = ref<boolean>(false);
 
-const INVALID_DATE = 'Must be a valid date';
-const FIELD_REQUIRED = 'This field is required';
-const MUST_BE_IN_PAST = 'Must be in the past';
+enum ErrorMessages {
+  InvalidDate = 'Must be a valid date',
+  InvalidDay = 'Must be a valid day',
+  InvalidMonth = 'Must be a valid month',
+  InvalidYear = 'Must be a valid year',
+  FieldRequired = 'This field is required',
+  MustBeInPast = 'Must be in the past',
+}
 
-const DAY_MS = 24 * 60 * 60 * 1000;
+const PAD = '0';
+const DAY_MS = 86400000;
 const YEAR_MS = DAY_MS * 365.2425;
 const MONTH_MS = YEAR_MS / 12;
 
 const onDayChange = (value: number) => {
   if (!value) {
-    dayError.value = FIELD_REQUIRED;
+    dayError.value = ErrorMessages.FieldRequired;
   } else if (isNaN(value) || value > 31 || value < 1) {
-    dayError.value = 'Must be a valid day';
+    dayError.value = ErrorMessages.InvalidDay;
   } else {
     dayError.value = undefined;
     dayValue.value = value;
@@ -39,9 +45,9 @@ const onDayChange = (value: number) => {
 
 const onMonthChange = (value: number) => {
   if (!value) {
-    monthError.value = FIELD_REQUIRED;
+    monthError.value = ErrorMessages.FieldRequired;
   } else if (isNaN(value) || value > 12 || value < 1) {
-    monthError.value = 'Must be a valid month';
+    monthError.value = ErrorMessages.InvalidMonth;
   } else {
     monthError.value = undefined;
     monthValue.value = value;
@@ -51,9 +57,9 @@ const onMonthChange = (value: number) => {
 
 const onYearChange = (value: number) => {
   if (isNaN(value)) {
-    yearError.value = 'Must be a valid year';
+    yearError.value = ErrorMessages.InvalidYear;
   } else if (value > new Date().getFullYear()) {
-    yearError.value = MUST_BE_IN_PAST;
+    yearError.value = ErrorMessages.MustBeInPast;
   } else {
     yearError.value = undefined;
     yearValue.value = value;
@@ -75,16 +81,16 @@ const checkValidDate = () => {
     localDate.setDate(dayValue.value);
 
     if (!isValidDate(dateString)) {
-      yearError.value = INVALID_DATE;
+      yearError.value = ErrorMessages.InvalidDate;
     } else if (localDate.getTime() > Date.now()) {
       if (yearValue.value > currentYear) {
-        yearError.value = MUST_BE_IN_PAST;
+        yearError.value = ErrorMessages.MustBeInPast;
       } else if (monthValue.value > currentMonth) {
-        monthError.value = MUST_BE_IN_PAST;
+        monthError.value = ErrorMessages.MustBeInPast;
       } else {
-        dayError.value = MUST_BE_IN_PAST;
+        dayError.value = ErrorMessages.MustBeInPast;
       }
-    } else if (dayError.value === INVALID_DATE) {
+    } else if (dayError.value === ErrorMessages.InvalidDate) {
       dayError.value = undefined;
     }
   }
@@ -92,9 +98,9 @@ const checkValidDate = () => {
 
 const getDateString = () => {
   if (dayValue.value && monthValue.value && yearValue.value) {
-    const month = monthValue.value.toString().padStart(2, '0');
-    const year = yearValue.value.toString().padStart(4, '0');
-    const day = dayValue.value.toString().padStart(2, '0');
+    const month = monthValue.value.toString().padStart(2, PAD);
+    const year = yearValue.value.toString().padStart(4, PAD);
+    const day = dayValue.value.toString().padStart(2, PAD);
     const dateString = `${year}-${month}-${day}`;
 
     return dateString;
@@ -179,36 +185,45 @@ const onSubmit = (ev: Event) => {
 @import '@/scss/mixins';
 
 main {
-  height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
+  @include flexParentCentering();
 }
+
 .age-calculator {
+  --br-large: 80pt;
+  --pad: 1.5em;
+  --width: clamp(350px, 50%, 400px);
+
+  background-color: var(--clr-white);
+  border-radius: 20pt 20pt var(--br-large) 20pt;
+  padding: var(--pad);
+  width: var(--width);
+
   display: flex;
   flex-direction: column;
-  background-color: var(--clr-white);
-  border-radius: 20pt 20pt 80pt 20pt;
-  padding: 1.5em;
 
   @include respond-from(large) {
-    width: 860px;
-    padding: 4em;
-    border-radius: 20pt 20pt 140pt 20pt;
+    --br-large: 140pt;
+    --pad: 4em;
+    --width: 860px;
+    --width: clamp(860px, 80%, 1000px);
   }
 
   &__inputs {
+    --gap: 1em;
+    --margin: 1em;
+    --justify: space-around;
+
+    justify-content: var(--justify);
+    margin-block: var(--margin);
+    gap: var(--gap);
+
     display: flex;
     flex-direction: row;
-    justify-content: space-around;
-    margin-block: 1em;
-    gap: 1em;
 
     @include respond-from(large) {
-      gap: 2em;
-      justify-content: start;
-      margin-block: 2em;
+      --gap: 2em;
+      --justify: start;
+      --margin: 2em;
     }
   }
 
@@ -217,24 +232,27 @@ main {
   }
 
   &__submit {
+    --right: calc(50% - 3.4em);
+
+    right: var(--right);
+
+    position: absolute;
+    top: 0;
     padding: 0;
     background-color: unset;
     border: unset;
-    position: absolute;
-    top: 0;
-    left: calc(50% - 42px);
     cursor: pointer;
 
     @include respond-from(large) {
-      right: 0;
-      left: unset;
+      --right: 0;
     }
   }
 
   &__output {
     font-size: var(--fs-700);
-    font-style: italic;
     font-weight: var(--fw-bold);
+
+    font-style: italic;
     line-height: 1.2;
 
     @include respond-from(large) {
@@ -245,13 +263,17 @@ main {
 
 .icon-container {
   --clr-fill: var(--clr-primary);
+  --transform: scale(0.7);
+
   background-color: var(--clr-fill);
-  border-radius: 50%;
-  transform: scale(0.7);
+  transform: var(--transform);
+
   padding: 1.8em;
 
+  @include circle-shape();
+
   @include respond-from(large) {
-    transform: unset;
+    --transform: unset;
   }
 
   &:hover {
@@ -260,24 +282,27 @@ main {
 }
 
 .horizontal-bar {
-  margin-block: 3em;
-  height: 2px;
   background-color: var(--clr-light-grey);
 
-  @include respond-from(large) {
-    transform: unset;
-  }
+  margin-block: 3em;
+  height: 2px;
 }
 
 .ago-value {
+  --color: var(--clr-primary);
+  --transform: unset;
+  --transition: color linear 0.5s;
+
+  color: var(--color);
+  transition: var(--transition);
+  transform: var(--transform);
+
   display: inline-block;
-  color: var(--clr-primary);
-  transition: color linear 0.5s;
 
   &--animate {
-    transform: rotate(360deg);
-    color: var(--clr-warn);
-    transition: all linear 0.5s;
+    --color: var(--clr-warn);
+    --transition: all linear 0.5s;
+    --transform: rotate(360deg);
   }
 }
 </style>

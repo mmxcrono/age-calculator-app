@@ -39,3 +39,15 @@ $breakpoints: (
     @error "Invalid breakpoint range: #{$from} - #{$to}.";
   }
 }
+
+@mixin flexParentCentering() {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+@mixin circle-shape() {
+  border-radius: 50%;
+}

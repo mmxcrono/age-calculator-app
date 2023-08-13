@@ -5,12 +5,14 @@
   "scripts": {
     "dev": "vite",
     "build": "vue-tsc && vite build",
+    "coverage": "vitest run --coverage",
     "test": "vitest run"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "eslint-config-prettier": "^9.0.0",
+    "happy-dom": "^6.0.4",
     "pinia": "^2.1.6",
     "vue": "^3.2.36",
     "vue-router": "^4.2.4"
@@ -18,6 +20,8 @@
   "devDependencies": {
     "@typescript-eslint/parser": "^6.3.0",
     "@vitejs/plugin-vue": "^4.2.3",
+    "@vitest/coverage-istanbul": "^0.34.1",
+    "@vue/test-utils": "^2.4.1",
     "prettier": "^3.0.1",
     "sass": "^1.65.1",
     "typescript": "^4.9.5",

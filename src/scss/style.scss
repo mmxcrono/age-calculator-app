@@ -3,6 +3,11 @@
 @import './mixins';
 
 :root {
+  // Font family
+  --ff: 'Poppins', sans-serif;
+
+  // Font sizes
+  --fs-base: 12pt;
   --fs-200: 0.8rem;
   --fs-300: 0.9rem;
   --fs-400: 1rem;
@@ -11,19 +16,26 @@
   --fs-700: 3rem;
   --fs-800: 6rem;
 
+  // Font weights
   --fw-normal: 400;
   --fw-bold: 700;
 
+  // Colors
   --clr-primary: #{$clr-purple-70};
   --clr-warn: #{$clr-light-red-70};
-
   --clr-white: #{$clr-neutral-100};
   --clr-off-white: #{$clr-neutral-90};
   --clr-light-grey: #{$clr-neutral-80};
   --clr-smokey-grey: #{$clr-neutral-20};
   --clr-off-black: #{$clr-neutral-10};
+}
 
-  font-size: 12pt;
+body {
+  background-color: var(--clr-off-white);
+  color: var(--clr-off-black);
+  font-size: var(--fs-base);
+  font-family: var(--ff);
+
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
@@ -31,12 +43,9 @@
   -webkit-text-size-adjust: 100%;
 }
 
-body {
-  font-family: 'Poppins', sans-serif;
-  background-color: var(--clr-off-white);
-  height: 100vh;
-}
-
-input {
-  font-family: 'Poppins', sans-serif;
+input,
+textarea,
+select,
+button {
+  color: var(--clr-off-black);
 }

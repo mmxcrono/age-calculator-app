@@ -3,9 +3,10 @@ import { ref, watch } from 'vue';
 
 const inputValue = ref('');
 
-const props = defineProps<{
+defineProps<{
   label: string;
   placeholder: string;
+  minValue?: number;
   maxValue?: number;
   errorMessage?: string | undefined;
 }>();
@@ -26,9 +27,9 @@ watch(inputValue, (newValue) => {
       v-model="inputValue"
       type="number"
       name="day"
-      :class="{ 'day-input__input': true, 'day-input__input--has-error': !!props.errorMessage }"
-      :placeholder="props.placeholder"
-      min="1"
+      :class="{ 'day-input__input': true, 'day-input__input--has-error': !!errorMessage }"
+      :placeholder="placeholder"
+      :min="minValue ?? 1"
       :max="maxValue"
       required
     />
@@ -39,10 +40,11 @@ watch(inputValue, (newValue) => {
 <style scoped lang="scss">
 @import '@/scss/mixins';
 .day-input {
+  color: var(--clr-smokey-grey);
+
   display: flex;
   flex-direction: column;
   gap: 0.5em;
-  color: var(--clr-smokey-grey);
   width: 5em;
 
   @include respond-from(large) {
@@ -61,12 +63,14 @@ watch(inputValue, (newValue) => {
   &__input {
     --clr-border: var(--clr-light-grey);
     border-color: var(--clr-border);
+    font-size: var(--fs-400);
+    font-weight: var(--fw-bold);
+    background-color: var(--clr-white);
+
     border-style: solid;
     border-width: 1px;
-    font-size: var(--fs-400);
     padding: 0.7em;
     border-radius: 8px;
-    font-weight: var(--fw-bold);
     outline: none;
 
     @include respond-from(large) {
@@ -96,6 +100,7 @@ watch(inputValue, (newValue) => {
   &__error {
     font-size: var(--fs-300);
     color: var(--clr-warn);
+
     font-style: italic;
   }
 }
